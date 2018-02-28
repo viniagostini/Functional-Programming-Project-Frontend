@@ -41,7 +41,7 @@ app.put('/api/profile/:id', function (req, res) {
 });
 
 // HTTP listener
-app.listen(4200, function () {
+app.listen(3000, function () {
   console.log('Example listening on port 4200!');
 });
 
