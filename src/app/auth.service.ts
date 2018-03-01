@@ -10,6 +10,7 @@ export class AuthService {
 
   private IS_AUTH_KEY = 'isAuthenticated';
   private currentUser;
+  private validHostedDomains = ['ccc.ufcg.edu.br', 'computacao.ufcg.edu.br'];
 
   constructor(private http: HttpClient) {
     this.loadGAPI();
@@ -20,7 +21,7 @@ export class AuthService {
 
     gapi.load('auth2', function () {
       ret = gapi.auth2.init({
-        hosted_domain: 'ccc.ufcg.edu.br'
+        // hosted_domain: 'ccc.ufcg.edu.br'
       });
     });
 
@@ -36,8 +37,9 @@ export class AuthService {
     return isAuth;
   }
 
-  public login (googleUser) {
-    this.currentUser = this.getGoogleUser(googleUser);
+  public login (user) {
+    this.currentUser = user;
+    console.log(this.getCurrentUser());
     localStorage.setItem(this.IS_AUTH_KEY, 'true');
   }
 
@@ -47,10 +49,13 @@ export class AuthService {
   }
 
   public getCurrentUser() {
-    return this.currentUser;
-  }
 
-  private getGoogleUser(googleUser) {
+    if (!gapi.auth2) {
+      return;
+    }
+
+    const googleUser = gapi.auth2.getAuthInstance().currentUser.get();
+
     const user = {
       id: '',
       name: '',
@@ -62,16 +67,16 @@ export class AuthService {
     };
 
     ((u, p) => {
-      u.id = p.getId();
-      u.name = p.getName();
-      u.email = p.getEmail();
-      u.imageUrl = p.getImageUrl();
-      u.givenName = p.getGivenName();
-      u.familyName = p.getFamilyName();
+      u.id            = p.getId();
+      u.name          = p.getName();
+      u.email         = p.getEmail();
+      u.imageUrl      = p.getImageUrl();
+      u.givenName     = p.getGivenName();
+      u.familyName    = p.getFamilyName();
     })(user, googleUser.getBasicProfile());
 
     ((u, r) => {
-      u.token = r.id_token;
+      u.token         = r.id_token;
     })(user, googleUser.getAuthResponse());
 
     return user;
@@ -79,6 +84,16 @@ export class AuthService {
 
   public getToken() {
     return gapi.auth2 && gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token;
+  }
+
+  public isHostedDomainValid(email) {
+    let isValid = false;
+    this.validHostedDomains.map((domain) => {
+      if (email.split('@')[1] === domain) {
+        isValid = true;
+      }
+    });
+    return isValid;
   }
 
 }

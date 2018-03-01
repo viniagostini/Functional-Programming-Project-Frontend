@@ -42,6 +42,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   public onSignIn(googleUser) {
+
     const user = {
       id: '',
       name: '',
@@ -65,21 +66,21 @@ export class AppComponent implements OnInit, AfterViewInit {
       u.token         = r.id_token;
     })(user, googleUser.getAuthResponse());
 
-    this.authService.login(googleUser);
+    if (this.authService.isHostedDomainValid(user.email)) {
 
-    this.zone.run(() => {
-      this.isAuthenticated = true;
-    });
+      this.authService.login(user);
 
-    this.user = user;
-/*
-    this.isAuthenticated = true;
+      this.zone.run(() => {
+        this.isAuthenticated = true;
+      });
 
-    this.app.tick();*/
+      this.router.navigate(['/profile']);
+    } else {
+      console.log('ERRO: Usuario tentou logar-se com um domínio de email não autorizado.');
+      this.authService.logout();
+    }
 
-    this.router.navigate(['/profile']);
   }
-
 
   public getIsAuthenticated () {
     return this.authService.isAuthenticated();

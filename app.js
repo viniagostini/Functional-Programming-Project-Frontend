@@ -7,26 +7,42 @@ const app = express();
 app.use(express.static(path.join(__dirname, 'dist')));
 app.use(bodyParser.json()); // support json encoded bodies
 
-const apiProxy = httpProxy.createProxyServer();
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 
-// the "index" route, which serves the Angular app
-app.get('/', function (req, res) {
-  res.sendFile(path.join(__dirname,'/dist/index.html'));
+var proxyOptions = {
+  changeOrigin: true
+};
+
+httpProxy.prototype.onError = function (err) {
+  console.log(err);
+};
+
+const apiProxy = httpProxy.createProxyServer(proxyOptions);
+
+apiProxy.on('error', function(err, req, res) {
+  res.end();
 });
 
 var apiForwardingUrl = 'http://localhost:3000';
 
 // the GET "foods" API endpoint
 app.all('/api/*', function (req, res) {
+
+  console.log(req.body);
+  console.log(req.originalUrl);
+
+  req.url = req.originalUrl;
+
   apiProxy.web(req, res, {target: apiForwardingUrl});
+
 });
 
-// PUT endpoint for editing food
-app.put('/api/profile/:id', function (req, res) {
-  let id = req.params.id;
-  let user = users.find(user => user.id == id);
-  user.code = req.body.code;
-  res.send(user);
+
+// the "index" route, which serves the Angular app
+app.get('/*', function (req, res) {
+  res.sendFile(path.join(__dirname,'/dist/index.html'));
 });
 
 // HTTP listener

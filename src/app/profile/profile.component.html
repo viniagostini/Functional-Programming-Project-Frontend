@@ -1,19 +1,30 @@
 <div class="container-fluid">
 
-  <img src="{{user.imageUrl}}" alt="" >
+  <!--<img src="{{user.imageUrl}}" alt="" >-->
 
   <ul>
     <li>
-      <strong>Nome:</strong> {{user.name}}
+      <strong>Id:</strong> {{user.Userid}}
+    </li>
+    <li>
+      <strong>Nome:</strong> {{user.nome}}
     </li>
     <li>
       <strong>Email:</strong> {{user.email}}
     </li>
-    <li>
-      <strong>Token:</strong> {{user.token}}
+    <li *ngIf="!!user.matricula">
+      <strong>Matricula:</strong> {{user.matricula}}
     </li>
 
+    <li *ngIf="!user.matricula">
+      <strong>Matricula:</strong>
+      <input type="number" id="input-matricula" [(ngModel)]="matriculaInput" placeholder="Insira sua matrícula">
+    </li>
   </ul>
 
+
+  <form (submit)="cadastrarUsurio(user)" *ngIf="!user.matricula">
+    <button type="submit">Cadastrar-se</button>
+  </form>
 
 </div>
