@@ -1,11 +1,19 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const path = require('path');
 
 const app = express();
-app.use(express.static(path.join(__dirname, 'dist')));
 
 app.use(bodyParser.json()); // support json encoded bodies
+
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
+
+app.use('/*', function(req, res, next) {
+  console.log(req.body);
+  next();
+});
+
 
 // some data for the API
 
@@ -25,12 +33,6 @@ let user2 = {
 
 let users = [user1, user2];
 
-// the "index" route, which serves the Angular app
-app.get('/', function (req, res) {
-  res.sendFile(path.join(__dirname,'/dist/index.html'));
-});
-
-// the GET "foods" API endpoint
 app.post('/api/profile', function (req, res) {
   console.log("/POST");
   let new_user = {
@@ -42,7 +44,7 @@ app.post('/api/profile', function (req, res) {
   users.push(new_user);
   console.log(new_user);
   console.log(users);
-  res.send(new_user);
+  res.status(200).json({}).end();
 });
 
 // PUT endpoint for editing food
@@ -54,9 +56,7 @@ app.get('/api/profile/:id', function (req, res) {
   console.log(user);
   if(!user){
     res.send(404);
-
   }else {
-
     res.send(user);
   }
 });

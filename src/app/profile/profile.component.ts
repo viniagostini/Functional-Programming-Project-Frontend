@@ -15,13 +15,12 @@ export class ProfileComponent implements OnInit {
 
   constructor(private authService: AuthService, private zone: NgZone, private http: HttpClient) {
     if (this.authService.isAuthenticated()) {
-      let googleUser = authService.getCurrentUser();
-      this.http.get('/api/profile/' + googleUser.id)
+      const googleUser = authService.getCurrentUser();
+      this.http.get('/api/usuario/' + googleUser.id)
         .subscribe(
           (data) => {
-
           zone.run(() => {
-            this.user = data;
+            this.user = data['user'];
           });
 
         },
@@ -31,7 +30,7 @@ export class ProfileComponent implements OnInit {
             console.log(this.user);
           });
 
-          console.log(err)
+          console.log(err);
         });
     }
   }
@@ -41,17 +40,18 @@ export class ProfileComponent implements OnInit {
 
   private googleUserMapper (googlerUser) {
     return {
-      Userid: googlerUser.id,
+      googleIdentifier: googlerUser.id,
       nome: googlerUser.name,
       email: googlerUser.email
     };
   }
 
   public cadastrarUsurio (usuario) {
-    usuario.matricula = this.matriculaInput;
+    usuario.matricula = '' + this.matriculaInput;
     this.user = usuario;
-    let body = JSON.stringify(usuario);
-    this.http.post('/api/profile', body).subscribe();
+    const body = JSON.stringify(usuario);
+    console.log(usuario);
+    this.http.post('/api/usuario', usuario).subscribe();
   }
 
 }

@@ -1,30 +1,28 @@
-<div class="container-fluid">
+<div class="container-fluid jumbotron profile-component-info">
 
   <!--<img src="{{user.imageUrl}}" alt="" >-->
 
-  <ul>
-    <li>
-      <strong>Id:</strong> {{user.Userid}}
-    </li>
-    <li>
+    <p>
+      <strong>Id:</strong> {{user.googleIdentifier}}
+    </p>
+    <p>
       <strong>Nome:</strong> {{user.nome}}
-    </li>
-    <li>
+    </p>
+    <p>
       <strong>Email:</strong> {{user.email}}
-    </li>
-    <li *ngIf="!!user.matricula">
-      <strong>Matricula:</strong> {{user.matricula}}
-    </li>
+    </p>
+    <p *ngIf="!!user.matricula">
+      <strong>Matricula:</strong> {{user.matricula|json}}
+    </p>
 
-    <li *ngIf="!user.matricula">
-      <strong>Matricula:</strong>
-      <input type="number" id="input-matricula" [(ngModel)]="matriculaInput" placeholder="Insira sua matrícula">
-    </li>
-  </ul>
+    <div *ngIf="!user.matricula">
+      <label for="input-matricula"><p><strong>Matricula:</strong></p></label>
+      <input id="input-matricula" [(ngModel)]="matriculaInput" placeholder="Insira sua matrícula">
+    </div>
+    <form (submit)="cadastrarUsurio(user)" *ngIf="!user.matricula">
 
+      <button type="submit" class="btn btn-primary" style="margin-left: 20px">Cadastrar-se</button>
+    </form>
 
-  <form (submit)="cadastrarUsurio(user)" *ngIf="!user.matricula">
-    <button type="submit">Cadastrar-se</button>
-  </form>
 
 </div>

@@ -5,11 +5,6 @@ var httpProxy = require('http-proxy');
 
 const app = express();
 app.use(express.static(path.join(__dirname, 'dist')));
-app.use(bodyParser.json()); // support json encoded bodies
-
-app.use(bodyParser.urlencoded({
-  extended: true
-}));
 
 var proxyOptions = {
   changeOrigin: true
@@ -29,11 +24,13 @@ var apiForwardingUrl = 'http://localhost:3000';
 
 // the GET "foods" API endpoint
 app.all('/api/*', function (req, res) {
-
+  console.log('POST');
   console.log(req.body);
   console.log(req.originalUrl);
 
   req.url = req.originalUrl;
+
+  console.log(req.headers);
 
   apiProxy.web(req, res, {target: apiForwardingUrl});
 
