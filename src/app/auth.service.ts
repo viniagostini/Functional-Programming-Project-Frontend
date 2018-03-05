@@ -83,7 +83,7 @@ export class AuthService {
   }
 
   public getToken() {
-    return gapi.auth2 && gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token;
+    return gapi.auth2 && gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token;
   }
 
   public isHostedDomainValid(email) {
